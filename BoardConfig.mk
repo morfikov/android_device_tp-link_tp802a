@@ -40,13 +40,22 @@ TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp
 
 ### Kernel
-BOARD_KERNEL_BASE := 0x80000000
-BOARD_KERNEL_PAGESIZE := 2048
-BOARD_KERNEL_OFFSET := 00008000
-BOARD_RAMDISK_OFFSET := 0x01000000
-BOARD_KERNEL_TAGS_OFFSET := 0x00000100
+BOARD_KERNEL_BASE         := 0x80000000
+BOARD_KERNEL_PAGESIZE     := 2048
+BOARD_KERNEL_OFFSET       := 0x00008000
+BOARD_RAMDISK_OFFSET      := 0x01000000
+BOARD_KERNEL_TAGS_OFFSET  := 0x00000100
 BOARD_KERNEL_SEPARATED_DT := false
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 earlyprintk
+BOARD_KERNEL_CMDLINE := \
+	console=ttyHSL0,115200,n8 \
+	androidboot.console=ttyHSL0 \
+	androidboot.hardware=qcom \
+	user_debug=31 \
+	msm_rtb.filter=0x237 \
+	ehci-hcd.park=3 \
+	androidboot.bootdevice=7824900.sdhci \
+	lpm_levels.sleep_disabled=1 \
+	earlyprintk
 #BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 BOARD_MKBOOTIMG_ARGS := \
 	--base $(BOARD_KERNEL_BASE) \
@@ -94,6 +103,9 @@ TARGET_USERIMAGES_USE_F2FS := true
 TW_INCLUDE_NTFS_3G := true
 TW_NO_EXFAT := false
 TW_NO_EXFAT_FUSE := false
+# Use this flag if the board has an EXT4 partition larger than 2 GiB
+BOARD_HAS_LARGE_FILESYSTEM := true
+
 
 ### Logs
 TARGET_USES_LOGD := true
@@ -110,6 +122,10 @@ BOARD_SEPOLICY_DIRS += \
 
 ### MISC
 BOARD_USES_QC_TIME_SERVICES := true
+
+# Charger
+RED_LED_PATH := "/sys/class/leds/red/brightness"
+CHARGING_ENABLED_PATH := /sys/class/power_supply/battery/charging_enabled
 BOARD_CHARGER_ENABLE_SUSPEND := true
 
 # Init of the devices boots under 1s but just in case it is hot and charging...
@@ -133,6 +149,10 @@ TW_DEFAULT_BRIGHTNESS := 10
 #TW_NO_SCREEN_BLANK := false
 TW_NEVER_UNMOUNT_SYSTEM := true
 
+# You only want to use TW_TARGET_USES_QCOM_BSP to enable overlay graphics if you can't get a
+# display with the standard fbdev graphics code. And if you define it, you need to build the kernel
+# from source together with the recovery, or TARGET_CUSTOM_KERNEL_HEADERS must be pointing to the
+# include directory for the kernel headers.
 #TW_TARGET_USES_QCOM_BSP := true
 #COMMON_GLOBAL_CFLAGS += -DQCOM_BSP
 
