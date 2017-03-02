@@ -28,15 +28,22 @@ TARGET_BOARD_PLATFORM := msm8909
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno304
 TARGET_BOOTLOADER_BOARD_NAME := msm8909
 
+TARGET_BOARD_SUFFIX := _32
+
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_VARIANT := cortex-a7
-TARGET_CPU_SMP := true
-ARCH_ARM_HAVE_TLS_REGISTER := true
 
-TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp
+# Architecture Extensions
+ARCH_ARM_HAVE_TLS_REGISTER := true
+# Make sure SMP is enabled in the kernel config (CONFIG_SMP=y)
+TARGET_CPU_SMP := true
+ARCH_ARM_HAVE_NEON := true
+ARCH_ARM_HAVE_VFP := true
+
+TARGET_GLOBAL_CFLAGS   += -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp
 
 ### Kernel
@@ -86,6 +93,8 @@ TARGET_HW_DISK_ENCRYPTION := true
 TW_INCLUDE_CRYPTO := true
 TARGET_KEYMASTER_WAIT_FOR_QSEE := true
 TARGET_PROVIDES_KEYMASTER := false
+# Remove the ability to encrypt backups with a password
+TW_EXCLUDE_ENCRYPTED_BACKUPS := false
 
 ### Partitions
 BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
@@ -99,13 +108,13 @@ BOARD_OEMIMAGE_PARTITION_SIZE      :=   0x4000000 # (64 MiB)
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 0x307CF7C00 # Enctypted footer included (-16384): 0x307CFBC00-0x4000
 BOARD_FLASH_BLOCK_SIZE := 131072                  # (BOARD_KERNEL_PAGESIZE * 64)
 TARGET_USERIMAGES_USE_EXT4 := true
+# Include F2FS support. Make sure your kernel supports F2FS!
 TARGET_USERIMAGES_USE_F2FS := true
 TW_INCLUDE_NTFS_3G := true
 TW_NO_EXFAT := false
 TW_NO_EXFAT_FUSE := false
 # Use this flag if the board has an EXT4 partition larger than 2 GiB
 BOARD_HAS_LARGE_FILESYSTEM := true
-
 
 ### Logs
 TARGET_USES_LOGD := true
@@ -127,19 +136,21 @@ BOARD_USES_QC_TIME_SERVICES := true
 RED_LED_PATH := "/sys/class/leds/red/brightness"
 CHARGING_ENABLED_PATH := /sys/class/power_supply/battery/charging_enabled
 BOARD_CHARGER_ENABLE_SUSPEND := true
+BOARD_CHARGER_SHOW_PERCENTAGE := true
 
 # Init of the devices boots under 1s but just in case it is hot and charging...
 TARGET_INCREASES_COLDBOOT_TIMEOUT := true
 
 ### Recovery
 TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/recovery.fstab
-#TARGET_RECOVERY_PIXEL_FORMAT := "RGB_565"
+# BGRA_8888, RGBA_8888, RGBX_8888, RGB_565
 #TARGET_RECOVERY_PIXEL_FORMAT := "RGBA_8888"
 BOARD_SUPPRESS_SECURE_ERASE := true
 RECOVERY_VARIANT := twrp
 
 ### TWRP
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
+# Timezone fix for some Qualcomm devices
 TARGET_RECOVERY_QCOM_RTC_FIX := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH :=  /sys/devices/platform/msm_hsusb/gadget/lun1/file
 TW_BRIGHTNESS_PATH := /sys/class/leds/lcd-backlight/brightness
@@ -156,25 +167,52 @@ TW_NEVER_UNMOUNT_SYSTEM := true
 #TW_TARGET_USES_QCOM_BSP := true
 #COMMON_GLOBAL_CFLAGS += -DQCOM_BSP
 
+# Set to true in order to enable localization
 TW_EXTRA_LANGUAGES := true
 TW_DEFAULT_LANGUAGE := en
-#TW_EXCLUDE_SUPERSU := false
-#TW_NO_REBOOT_BOOTLOADER := false
-#TW_NO_REBOOT_RECOVERY := false
+# Exclude SuperSu e.g. to save some space or for different other reasons
+TW_EXCLUDE_SUPERSU := false
+# Removes the "Bootloader" button from the "Reboot" menu
+TW_NO_REBOOT_BOOTLOADER := false
+# Removes the "Recovery" button from the Reboot menu
+TW_NO_REBOOT_RECOVERY := false
+# Removes the "Mount USB Storage" button  from the "Mount" menu on devices that don't support the
+# USB storage
+TW_NO_USB_STORAGE := false
+# Add an option in the "Reboot" menu to reboot into Download Mode (for Samsung devices)
 TW_HAS_DOWNLOAD_MODE := false
 #TW_NO_BATT_PERCENT := false
-#TW_NO_CPU_TEMP := false
+# Some devices don't have a temp sensor. Disable in such case to stop spamming the recovery log
+TW_NO_CPU_TEMP := false
+
+TW_HAS_NO_BOOT_PARTITION := false
+TW_HAS_NO_RECOVERY_PARTITION := false
+
+# MTP support
+#TW_EXCLUDE_MTP := true
+# Specify a custom device name for MTP
 TW_MTP_DEVICE := "/dev/mtp_usb"
+
 TW_CUSTOM_CPU_TEMP_PATH := /sys/class/thermal/thermal_zone1/temp
 TW_HAS_USB_STORAGE := true
 # For people who would want to have ToyBox rather than Busybox
 TW_USE_TOOLBOX := false
+# TWRP backup folder is named after the "Serial" entry in the /proc/cpuinfo file. Some devices
+# don't show their serial number in that file and the "Serial" entry shows "0000000000000000". By
+# using this flag, TWRP will use "ro.product.model" as the folder name instead.
 TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID := true
 # An awesome way to take screenshots. Back-end improvement, no noticeable user side changes.
 # Screenshots work without it too
 TW_INCLUDE_FB2PNG := true
 
+# BOARD_HAS_NO_REAL_SDCARD when "true" disables things like sdcard partitioning and may save you
+# some space if TWRP isn't fitting in your recovery patition
 BOARD_HAS_NO_REAL_SDCARD := false
+# RECOVERY_SDCARD_ON_DATA when "true" enables proper handling of /data/media on devices that have
+# this folder for storage (most Honeycomb and devices that originally shipped with ICS like Galaxy
+# Nexus) This flag is not required for these types of devices though. If you do not define this
+# flag and also do not include any references to /sdcard, /internal_sd, /internal_sdcard, or /emmc
+# in your fstab, then we will automatically assume that the device is using emulated storage.
 RECOVERY_SDCARD_ON_DATA := true
 
 #TW_INTERNAL_STORAGE_PATH := "/data/media"
@@ -182,11 +220,14 @@ RECOVERY_SDCARD_ON_DATA := true
 #TW_EXTERNAL_STORAGE_PATH := "/sdcard1"
 #TW_EXTERNAL_STORAGE_MOUNT_POINT := "sdcard1"
 
-#
-# portrait_mdpi  = 320x480 480x800 480x854 540x960
-# portrait_hdpi  = 720x1280 800x1280 1080x1920 1200x1920 1440x2560 1600x2560
-# watch_mdpi     = 240x240 280x280 320x320
-# landscape_mdpi = 800x480 1024x600 1024x768
-# landscape_hdpi = 1280x800 1920x1200 2560x1600
-TW_THEME := portrait_hdpi
+# This TW_THEME flag replaces the older DEVICE_RESOLUTION flag. TWRP now uses scaling to stretch
+# any theme to fit the screen resolution. There are currently 5 settings which are:
+#   portrait_mdpi  = 320x480 480x800 480x854 540x960
+#   portrait_hdpi  = 720x1280 800x1280 1080x1920 1200x1920 1440x2560 1600x2560
+#   watch_mdpi     = 240x240 280x280 320x320
+#   landscape_mdpi = 800x480 1024x600 1024x768
+#   landscape_hdpi = 1280x800 1920x1200 2560x1600
+TW_THEME := portrait_mdpi
 TWRP_NEW_THEME := true
+#TW_CUSTOM_THEME  := /some/path/
+
