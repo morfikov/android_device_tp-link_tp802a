@@ -156,7 +156,7 @@ TW_MAX_BRIGHTNESS := 255
 TW_DEFAULT_BRIGHTNESS := 10
 #TW_NO_SCREEN_TIMEOUT := false
 #TW_NO_SCREEN_BLANK := false
-TW_NEVER_UNMOUNT_SYSTEM := true
+TW_NEVER_UNMOUNT_SYSTEM := false
 
 # You only want to use TW_TARGET_USES_QCOM_BSP to enable overlay graphics if you can't get a
 # display with the standard fbdev graphics code. And if you define it, you need to build the kernel
