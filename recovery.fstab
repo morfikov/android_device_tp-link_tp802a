@@ -58,7 +58,7 @@
 /data           ext4      /dev/block/bootdevice/by-name/userdata             flags=display="Data";backup=1;wipeingui;wipeduringfactoryreset;encryptable=footer;length=-16384
 
 #
-#/mmcblk0rpmb    emmc      /dev/block/bootdevice/by-name/mmcblk0rpmb          flags=display="mmcblk0rpmb";backup=1
+#/mmcblk0rpmb   emmc      /dev/block/bootdevice/mmcblk0rpmb                 flags=display="mmcblk0rpmb";backup=1
 
 # External
 /sdcard1        auto      /dev/block/mmcblk1p1                               flags=display="MicroSD";storage;wipeingui;removable
