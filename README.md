@@ -14,7 +14,7 @@ Storage | 16 GB
 MicroSD | Up to 32 GB
 Battery | 2300 mAh
 Dimensions | 144 x 72 x 8.8 mm
-Display | 1280 x 720 pixels 5.0"
+Display | 1280 x 720 pixels 5.0" (293.7 PPI)
 Rear Camera  | 8.0 MP
 Front Camera | 2.0 MP
 Release Date | August 2016
@@ -44,7 +44,7 @@ Medium checks
 - [x] F2FS/EXT4 Support, exFAT/NTFS where supported
 - [x] all important partitions listed in mount/backup lists
 - [ ] backup/restore to/from external (USB-OTG) storage (not supported by the device)
-- [x] backup/restore to/from adb (https://gerrit.omnirom.org/#/c/15943/)
+- [ ] backup/restore to/from adb (https://gerrit.omnirom.org/#/c/15943/)
 - [x] decrypt /data
 - [x] Correct date
 
@@ -55,8 +55,8 @@ Minor checks
 - [x] poweroff
 - [x] battery level
 - [x] temperature
-- [x] encrypted backups (https://forum.xda-developers.com/showthread.php?t=2011811)
-- [ ] input devices via USB (USB-OTG) - keyboard, mouse (not supported by the device)
+- [x] encrypted backups
+- [ ] input devices via USB (USB-OTG) - keyboard, mouse and disks (not supported by the device)
 - [x] USB mass storage export
 - [x] set brightness
 - [x] vibrate
