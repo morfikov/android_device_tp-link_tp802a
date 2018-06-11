@@ -1,3 +1,5 @@
+# This project has been permanently moved to [gitlab](https://gitlab.com/morfikov/android_device_tp-link_tp802a). It will no longer be maintained here. Please, refer to [gitlab](https://gitlab.com/morfikov/android_device_tp-link_tp802a) repository for updates.
+
 TeamWin Recovery Project
 
 Device configuration for TP-LINK Neffos Y5 (TP802A)
